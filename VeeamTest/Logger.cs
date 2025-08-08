@@ -9,18 +9,18 @@ namespace VeeamTest
 {
     class Logger
     {
-        private string logFilePath;
+        private readonly string _logFilePath;
 
         public Logger(string _logFilePath)
         {
-            logFilePath = _logFilePath;
+            _logFilePath = _logFilePath;
         }
 
         public void Log(string message)
         {
             string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}";
             Console.WriteLine(logEntry);
-            File.AppendAllText(logFilePath, logEntry + Environment.NewLine);
+            File.AppendAllText(_logFilePath, logEntry + Environment.NewLine);
         }
     }
 }
