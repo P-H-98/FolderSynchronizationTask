@@ -60,9 +60,34 @@ namespace VeeamTest
             }
         }
 
-        private void RemoveExtra(string sourcePath, string replicaPath)
+        private void RemoveExtra(string replicaPath, string sourcePath)
         {
+            foreach (string replicaFile in Directory.GetFiles(replicaPath))
+            {
+                string fileName = Path.GetFileName(replicaFile);
+                string sourceFile = Path.Combine(sourcePath, fileName);
 
+                if(!File.Exists(sourceFile))
+                {
+                    File.Delete(replicaFile);
+                    _logger.Log($"Deleted: {replicaFile}");
+                }
+            }
+
+            foreach (string replicaDir in Directory.GetDirectories(replicaPath))
+            {
+                string dirName = Path.GetFileName(replicaDir);
+                string sourceDir = Path.Combine(sourcePath, dirName);
+
+                if(!Directory.Exists(sourceDir))
+                {
+                    Directory.Delete(replicaDir, true);
+                }
+                else
+                {
+                    RemoveExtra(replicaDir, sourceDir);
+                }
+            }
         }
     }
 }
