@@ -7,6 +7,9 @@ using System.IO;
 
 namespace VeeamTest
 {
+    /// <summary>
+    /// Class <c>Logger</c> brings functionalities needed to log messages to a log file
+    /// </summary>
     class Logger
     {
         private readonly string _logFilePath;
