@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using VeeamTest.Exceptions;
 
 namespace VeeamTest
 {
@@ -21,8 +22,7 @@ namespace VeeamTest
             // Simple check whether source path exists. If not - log it and exit the function.
             if (!Directory.Exists(sourcePath))
             {
-                _logger.Log($"Source directory does not exist: {sourcePath}");
-                return;
+                throw new SourceDirectoryNotFoundException(sourcePath);
             }
             
             // Make sure the replica directory exists
