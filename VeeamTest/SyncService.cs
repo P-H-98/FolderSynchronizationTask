@@ -82,6 +82,7 @@ namespace VeeamTest
                 if(!Directory.Exists(sourceDir))
                 {
                     Directory.Delete(replicaDir, true);
+                    _logger.Log($"Deleted directory: {replicaDir}");
                 }
                 else
                 {
