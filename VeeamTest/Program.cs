@@ -17,41 +17,98 @@ namespace VeeamTest
         /// </param>
         static void Main(string[] args)
         {
-            // Check the correct number of arguments
-            if  (args.Length != 4)
+            try
             {
-                Console.WriteLine("Usage: VeeamTest <sourcePath> <replicaPath> <intervalSeconds> <logFilePath>");
-                return;
+                var(sourcePath, replicaPath, intervalSeconds, logFilePath) = ValidateArguments(args);
+
+                Logger logger = new Logger(logFilePath);
+                SyncService syncService = new SyncService(logger);
+
+                logger.Log($"Starting directory synchronization from '{sourcePath}' to '{replicaPath}' every {intervalSeconds} seconds");
+
+                while (true)
+                {
+                    try
+                    {
+                        syncService.Synchronize(sourcePath, replicaPath);
+                    }
+                    catch (SourceDirectoryNotFoundException ex)
+                    {
+                        logger.Log($"Error: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Log($"Unexpected error: {ex.Message}");
+                    }
+
+                    Thread.Sleep(intervalSeconds * 1000);
+                }
+            } 
+            catch (InvalidArgumentsException ex)
+            {
+                Console.WriteLine($"Invalid arguments: {ex.Message}");
+                PrintUsage();
+            }
+            catch (LogFileAccessException ex)
+            {
+                Console.WriteLine($"Log file error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+            }
+        }
+
+        static (string sourcePath, string replicaPath, int intervalSeconds, string logFilePath) ValidateArguments(string[] args)
+        {
+            if (args.Length != 4)
+            {
+                throw new InvalidArgumentsException("Incorrect number of arguments.");
             }
 
             string sourcePath = args[0];
             string replicaPath = args[1];
-            int intervalSeconds = int.Parse(args[2]);
+            string intervalArg = args[2];
             string logFilePath = args[3];
 
-            Logger logger = new Logger(logFilePath);
-            SyncService syncService = new SyncService(logger);
-
-            logger.Log($"Starting folder synchronization from '{sourcePath}' to '{replicaPath}' every {intervalSeconds} seconds.");
-
-            // Synchronization loop
-            while (true)
+            if(!int.TryParse(intervalArg, out int intervalSeconds) || intervalSeconds <= 0)
             {
-                try
-                {
-                    syncService.Synchronize(sourcePath, replicaPath);
-                }
-                catch (SourceDirectoryNotFoundException ex)
-                {
-                    logger.Log($"Error: {ex.Message}");
-                }
-                catch (Exception ex)
-                {
-                    logger.Log($"Unexpected error: {ex.Message}");
-                }
-
-                Thread.Sleep(intervalSeconds * 1000);
+                throw new InvalidArgumentsException("Interval must be a positive integer (seconds).");
             }
+
+            if(!Directory.Exists(sourcePath))
+            {
+                throw new InvalidArgumentsException($"Source path does not exist: {sourcePath}");
+            }
+
+            try
+            {
+                Directory.CreateDirectory(replicaPath);
+            } 
+            catch (Exception ex)
+            {
+                throw new InvalidArgumentsException($"Could not create replica directory: {replicaPath}");
+            }
+
+            try
+            {
+                File.AppendAllText(logFilePath, $"Log initialized at {DateTime.Now}\n");
+            }
+            catch (Exception ex)
+            {
+                throw new LogFileAccessException($"Could not write to the log file: {logFilePath} ({ex.Message})");
+            }
+
+            return (sourcePath, replicaPath, intervalSeconds, logFilePath);
+
+        }
+
+        private static void PrintUsage()
+        {
+            Console.WriteLine("Usage: ");
+            Console.WriteLine("VeeamTest <sourcePath> <replicaPath> <intervalSeconds> <logFilePath>");
+            Console.WriteLine("Example: ");
+            Console.WriteLine(@"VeeamTest C:\Data\Source C:\Data\Replica 60 C:\Logs\sync.log");
         }
     }
 }
