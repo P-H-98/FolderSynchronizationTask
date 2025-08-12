@@ -11,7 +11,7 @@ namespace VeeamTest
     /// <summary>
     /// Class <c>SyncService</c> brings functionalities needed to synchronize two directories together
     /// </summary>
-    class SyncService
+    public class SyncService
     {
         private readonly Logger _logger;
 

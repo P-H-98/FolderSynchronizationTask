@@ -4,7 +4,7 @@ using VeeamTest.Exceptions;
 
 namespace VeeamTest
 {
-    class Program
+    public class Program
     {
         /// <summary>
         /// Main method of the program
@@ -63,7 +63,7 @@ namespace VeeamTest
             }
         }
 
-        static (string sourcePath, string replicaPath, int intervalSeconds, string logFilePath) ValidateArguments(string[] args)
+        public static (string sourcePath, string replicaPath, int intervalSeconds, string logFilePath) ValidateArguments(string[] args)
         {
             if (args.Length != 4)
             {
