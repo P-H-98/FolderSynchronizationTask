@@ -14,9 +14,9 @@ namespace VeeamTest
     {
         private readonly string _logFilePath;
 
-        public Logger(string _logFilePath)
+        public Logger(string logFilePath)
         {
-            _logFilePath = _logFilePath;
+            _logFilePath = logFilePath;
         }
 
         public void Log(string message)

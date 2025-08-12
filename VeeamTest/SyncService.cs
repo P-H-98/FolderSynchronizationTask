@@ -41,7 +41,7 @@ namespace VeeamTest
             CopyAndUpdate(sourcePath, replicaPath);
 
             // Remove any files and/or directories in replica direcotry that are not part of origin directory
-            RemoveExtra(sourcePath, replicaPath);
+            RemoveExtra(replicaPath, sourcePath);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace VeeamTest
             foreach (string sourceFile in Directory.GetFiles(sourcePath))
             {
                 string fileName = Path.GetFileName(sourceFile);
-                string replicaFile = Path.Combine(replicaPath, sourceFile);
+                string replicaFile = Path.Combine(replicaPath, fileName);
                 
                 // Check if file does not exist, was edited since last synchronization or has different size in bytes 
                 if (!File.Exists(replicaFile) ||
@@ -75,7 +75,11 @@ namespace VeeamTest
                 string replicaDir = Path.Combine(replicaPath, dirName);
 
                 // Create new directory (unless they already exist)
-                Directory.CreateDirectory(replicaDir);
+                if (!Directory.Exists(replicaDir))
+                {
+                    Directory.CreateDirectory(replicaDir);
+                    _logger.Log($"Created directory: {replicaDir}");
+                }
 
                 // Act recursively for subdirectories
                 CopyAndUpdate(sourceDir, replicaDir);
