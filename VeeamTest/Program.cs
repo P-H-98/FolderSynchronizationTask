@@ -19,6 +19,9 @@ namespace VeeamTest
         {
             try
             {
+                // call to a static function to Validate arguments
+                // if they are valid, store them in variables
+                // throws exception when arguments are invalid
                 var(sourcePath, replicaPath, intervalSeconds, logFilePath) = ValidateArguments(args);
 
                 Logger logger = new Logger(logFilePath);
@@ -26,6 +29,7 @@ namespace VeeamTest
 
                 logger.Log($"Starting directory synchronization from '{sourcePath}' to '{replicaPath}' every {intervalSeconds} seconds");
 
+                // main loop
                 while (true)
                 {
                     try
@@ -100,7 +104,6 @@ namespace VeeamTest
             }
 
             return (sourcePath, replicaPath, intervalSeconds, logFilePath);
-
         }
 
         private static void PrintUsage()

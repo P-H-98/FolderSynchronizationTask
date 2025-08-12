@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "VeeamTest": {
+      "commandName": "Project",
+      "commandLineArgs": "E:\\Data\\Origin E:\\Data\\Replica 60 E:\\Data\\Logs\\FolderSyncLog.txt"
+    }
+  }
+}
